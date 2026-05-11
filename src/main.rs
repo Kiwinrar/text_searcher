@@ -1,4 +1,5 @@
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::process;
 
@@ -8,13 +9,9 @@ fn main() {
     match parameter {
         Ok(value) => {
             value.query;
-            let contents_of_file = fs::read_to_string(value.filename);
-            match contents_of_file {
-                Ok(contents) => println!("{}", contents),
-                Err(er) => {
-                    println!("Error reading the contents of the file:\n{}", er);
-                    process::exit(2)
-                }
+            if let Err(e)=run(value){
+                println!("Application Error: {}", e);
+                process::exit(2)
             }
         }
         Err(err) => {
@@ -23,7 +20,11 @@ fn main() {
         }
     }
 }
-
+fn run(config_parameter: ConfigQuery)->Result<(), Box<dyn Error>> {
+    let contents_of_file = fs::read_to_string(config_parameter.filename)?;
+    println!("{}", contents_of_file);
+    Ok(())
+}
 struct ConfigQuery<'a> {
     query: &'a str,
     filename: &'a str,
@@ -35,7 +36,6 @@ impl<'a> ConfigQuery<'a> {
         }
         let query: &str = &args[1];
         let filename: &str = &args[2];
-        print!("{}", filename);
         let parameter = ConfigQuery {
             query,
             filename,
