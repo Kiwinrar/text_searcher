@@ -1,6 +1,8 @@
 use std::env;
 use std::process;
 use text_searcher;
+mod run;
+use run::run;
 fn main() {
     let arguments: Vec<String> = env::args().collect();
     let parameters=match text_searcher::ConfigQuery::new(&arguments){
@@ -21,7 +23,7 @@ fn main() {
         }
     };
     let (config_query, query_parameter)=query_output;
-    if let Err(e) = text_searcher::run(config_query, query_parameter) {
+    if let Err(e) = run(config_query, query_parameter) {
         println!("Application Error: {}", e);
         process::exit(2)
     }

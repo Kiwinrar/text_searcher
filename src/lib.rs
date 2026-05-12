@@ -1,36 +1,6 @@
-use std::error::Error;
-use std::fs;
-
-pub fn run(
-    config_parameter: ConfigQuery,
-    search_parameter: &[String]
-) -> Result<(), Box<dyn Error>> {
-    let contents_of_file = fs::read_to_string(config_parameter.filename)?;
-    if matches!(config_parameter.query, Commands::Search) {
-        let search_result = search(search_parameter, &contents_of_file);
-        for val in search_result.iter() {
-            println!("{}", val);
-        }
-    }
-    if matches!(config_parameter.query, Commands::Read) {
-        println!("{}", contents_of_file);
-    }
-    Ok(())
-}
-pub fn search<'a>(query: &'a [String], contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
-    for (_i, ch) in query.iter().enumerate() {
-        for line in contents.lines(){
-            if line.contains(ch){
-                results.push(line);
-            }
-        }
-    }
-    results
-}
 pub struct ConfigQuery<'a> {
     pub query: Commands,
-    filename: &'a str,
+    pub filename: &'a str,
 }
 #[derive(Debug)]
 pub enum Commands {
